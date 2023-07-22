@@ -19,6 +19,7 @@ public class Producto {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	private String imagen;
+	private String descripcion;
 	private String nombre;
 	private double precio;
 	private int stock;
@@ -30,14 +31,25 @@ public class Producto {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Producto(Integer id, String imagen, String nombre, double precio, int stock, Categoria categoria) {
-		super();
+	public Producto(Integer id, String imagen, String descripcion, String nombre, double precio, int stock,
+			Categoria categoria) {
 		this.id = id;
 		this.imagen = imagen;
+		this.descripcion = descripcion;
 		this.nombre = nombre;
 		this.precio = precio;
 		this.stock = stock;
 		this.categoria = categoria;
+	}
+
+
+
+	public String getDescripcion() {
+		return descripcion;
+	}
+
+	public void setDescripcion(String descripcion) {
+		this.descripcion = descripcion;
 	}
 
 	public Integer getId() {
