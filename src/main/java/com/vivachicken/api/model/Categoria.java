@@ -1,9 +1,10 @@
 package com.vivachicken.api.model;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -19,17 +20,37 @@ public class Categoria {
 	private String imagen;
 	private String nombre;
 	
+	@OneToMany(mappedBy = "categoria", cascade = CascadeType.ALL)
+	private Set<Producto> productos = new HashSet<>();
+	
 	
 	public Categoria() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Categoria(Integer id, String imagen, String nombre) {
+
+	public Categoria(Integer id, String imagen, String nombre, Set<Producto> productos) {
 		super();
 		this.id = id;
 		this.imagen = imagen;
 		this.nombre = nombre;
+		this.productos = productos;
 	}
+
+
+	
+	public Set<Producto> getProductos() {
+		return productos;
+	}
+
+
+	public void setProductos(Set<Producto> productos) {
+		this.productos = productos;
+		for(Producto producto : productos) {
+			producto.setCategoria(this);
+		}
+	}
+
 
 	public Integer getId() {
 		return id;

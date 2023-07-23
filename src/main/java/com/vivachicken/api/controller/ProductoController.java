@@ -16,15 +16,12 @@ import com.vivachicken.api.service.ProductoService;
 @RestController
 @RequestMapping("/productos")
 public class ProductoController {
-
-	private final ProductoService productoService;
-    private final CategoriaService categoriaService;
-
-    @Autowired
-    public ProductoController(ProductoService productoService, CategoriaService categoriaService) {
-        this.productoService = productoService;
-        this.categoriaService = categoriaService;
-    }
+	
+	@Autowired
+	private ProductoService productoService;
+	
+	@Autowired
+    private CategoriaService categoriaService;
 
 	@GetMapping
 	public ResponseEntity<List<Producto>> getAllProductos() {

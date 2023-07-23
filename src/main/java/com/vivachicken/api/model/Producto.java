@@ -10,6 +10,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 
 @Entity
@@ -24,7 +26,9 @@ public class Producto {
 	private double precio;
 	private int stock;
 	
-	@ManyToOne(targetEntity = Categoria.class, fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY,optional = false)
+	@JoinColumn(name = "categoria_id")
+	@JsonProperty(access = Access.WRITE_ONLY)
 	private Categoria categoria;
 	
 	public Producto() {
@@ -41,7 +45,6 @@ public class Producto {
 		this.stock = stock;
 		this.categoria = categoria;
 	}
-
 
 
 	public String getDescripcion() {
