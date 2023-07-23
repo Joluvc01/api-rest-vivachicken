@@ -1,11 +1,17 @@
 package com.vivachicken.api.model;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "detalles")
@@ -16,10 +22,13 @@ public class DetalleOrden {
 	private double cantidad;
 	private double total;
 	
-	@OneToOne
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "orden_id", nullable = false)
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	private Orden orden;
 	
 	@OneToOne
+	@JoinColumn(name = "productos_id")
 	private Producto productos;
 
 	public DetalleOrden() {
