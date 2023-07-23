@@ -39,7 +39,6 @@ public class Orden {
 	
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "cliente_id")
-	@OnDelete(action = OnDeleteAction.CASCADE)
 	private Cliente cliente;
 	
 	@OneToMany(mappedBy = "orden", cascade = CascadeType.ALL)
@@ -65,16 +64,31 @@ public class Orden {
 		return detalles;
 	}
 
-
 	public void setDetalles(Set<DetalleOrden> detalles) {
-		this.detalles = detalles;
-	}
+        this.detalles = detalles;
+        actualizarTotalFinal(); // Actualizar totalFinal cuando se asignan nuevos detalles
+    }
 
+    public void agregarDetalle(DetalleOrden detalle) {
+        detalles.add(detalle);
+        detalle.setOrden(this); // Establecer la relación bidireccional entre detalle y orden
+        actualizarTotalFinal(); // Actualizar totalFinal al agregar un nuevo detalle
+    }
+
+    public void eliminarDetalle(DetalleOrden detalle) {
+        detalles.remove(detalle);
+        detalle.setOrden(null); // Eliminar la relación bidireccional entre detalle y orden
+        actualizarTotalFinal(); // Actualizar totalFinal al eliminar un detalle
+    }
+
+    private void actualizarTotalFinal() {
+        double totalDetalles = detalles.stream().mapToDouble(DetalleOrden::getTotal).sum();
+        totalFinal = subtotal + igv + totalDetalles;
+    }
 
 	public void setFecha(Date fecha) {
 		this.fecha = fecha;
 	}
-
 
 	public Integer getId() {
 		return id;
@@ -87,7 +101,6 @@ public class Orden {
 	public Date getFecha() {
 		return fecha;
 	}
-
 
 	public double getSubtotal() {
 		return subtotal;

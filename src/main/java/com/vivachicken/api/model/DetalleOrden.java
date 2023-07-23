@@ -57,8 +57,9 @@ public class DetalleOrden {
 	}
 
 	public void setCantidad(double cantidad) {
-		this.cantidad = cantidad;
-	}
+        this.cantidad = cantidad;
+        this.total = cantidad * productos.getPrecio(); // Multiplicamos la cantidad por el precio del producto
+    }
 
 	public double getTotal() {
 		return total;

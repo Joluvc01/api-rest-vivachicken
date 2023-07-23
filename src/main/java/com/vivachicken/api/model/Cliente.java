@@ -11,6 +11,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import net.bytebuddy.implementation.bind.annotation.Default;
+
 
 @Entity
 @Table(name = "clientes")
@@ -27,7 +29,6 @@ public class Cliente {
 	private String direccion;
 	private String dni;
 	private String ruc;
-	private Boolean estado;
 	
 	@OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
 	private Set<Orden> ordenes = new HashSet<>();;
@@ -37,7 +38,7 @@ public class Cliente {
 	}
 
 	public Cliente(Integer id, String nombre, String apellido, String email, String password, String telefono,
-			String direccion, String dni, String ruc, Boolean estado, Set<Orden> ordenes) {
+			String direccion, String dni, String ruc, Set<Orden> ordenes) {
 		super();
 		this.id = id;
 		this.nombre = nombre;
@@ -48,7 +49,6 @@ public class Cliente {
 		this.direccion = direccion;
 		this.dni = dni;
 		this.ruc = ruc;
-		this.estado = estado;
 		this.ordenes = ordenes;
 	}
 
@@ -124,23 +124,12 @@ public class Cliente {
 		this.ruc = ruc;
 	}
 
-	public Boolean getEstado() {
-		return estado;
-	}
-
-	public void setEstado(Boolean estado) {
-		this.estado = estado;
-	}
-
 	public Set<Orden> getOrdenes() {
 		return ordenes;
 	}
 
 	public void setOrdenes(Set<Orden> ordenes) {
 		this.ordenes = ordenes;
-		for(Orden orden : ordenes) {
-			orden.setCliente(this);
-		}
 	}
 	
 }
