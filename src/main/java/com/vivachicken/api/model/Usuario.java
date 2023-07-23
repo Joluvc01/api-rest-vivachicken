@@ -1,11 +1,16 @@
 package com.vivachicken.api.model;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 
 @Entity
@@ -18,11 +23,19 @@ public class Usuario {
 	private String password;
 	private Boolean estado;
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY,optional = false)
+	@JoinColumn(name = "cargo_id")
+	@JsonProperty(access = Access.WRITE_ONLY)
 	private Cargo cargo;
 	
 	public Usuario() {
 		// TODO Auto-generated constructor stub
+	}
+	
+	public Usuario(String username, String password) {
+		super();
+		this.username = username;
+		this.password = password;
 	}
 
 	public Usuario(Integer id, String username, String password, Boolean estado, Cargo cargo) {

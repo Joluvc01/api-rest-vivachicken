@@ -1,14 +1,15 @@
 package com.vivachicken.api.model;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-
 
 @Entity
 @Table(name = "cargos")
@@ -17,15 +18,15 @@ public class Cargo {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	private String nombre;
-	
-	@OneToMany(mappedBy = "cargo")
-	private List<Usuario> usuarios;
+
+	@OneToMany(mappedBy = "cargo", cascade = CascadeType.ALL)
+	private Set<Usuario> usuarios = new HashSet<>();
 
 	public Cargo() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Cargo(Integer id, String nombre, List<Usuario> usuarios) {
+	public Cargo(Integer id, String nombre, Set<Usuario> usuarios) {
 		super();
 		this.id = id;
 		this.nombre = nombre;
@@ -48,13 +49,15 @@ public class Cargo {
 		this.nombre = nombre;
 	}
 
-	public List<Usuario> getUsuarios() {
+	public Set<Usuario> getUsuarios() {
 		return usuarios;
 	}
 
-	public void setUsuarios(List<Usuario> usuarios) {
+	public void setUsuarios(Set<Usuario> usuarios) {
 		this.usuarios = usuarios;
+		for (Usuario usuario : usuarios) {
+			usuario.setCargo(this);
+		}
 	}
-	
-	
+
 }

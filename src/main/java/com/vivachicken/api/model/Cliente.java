@@ -1,7 +1,9 @@
 package com.vivachicken.api.model;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -27,15 +29,15 @@ public class Cliente {
 	private String ruc;
 	private Boolean estado;
 	
-	@OneToMany(mappedBy = "cliente")
-	private List<Orden> ordenes;
+	@OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
+	private Set<Orden> ordenes = new HashSet<>();;
 	
 	public Cliente() {
 		// TODO Auto-generated constructor stub
 	}
 
 	public Cliente(Integer id, String nombre, String apellido, String email, String password, String telefono,
-			String direccion, String dni, String ruc, Boolean estado, List<Orden> ordenes) {
+			String direccion, String dni, String ruc, Boolean estado, Set<Orden> ordenes) {
 		super();
 		this.id = id;
 		this.nombre = nombre;
@@ -130,12 +132,15 @@ public class Cliente {
 		this.estado = estado;
 	}
 
-	public List<Orden> getOrdenes() {
+	public Set<Orden> getOrdenes() {
 		return ordenes;
 	}
 
-	public void setOrdenes(List<Orden> ordenes) {
+	public void setOrdenes(Set<Orden> ordenes) {
 		this.ordenes = ordenes;
+		for(Orden orden : ordenes) {
+			orden.setCliente(this);
+		}
 	}
 	
 }
