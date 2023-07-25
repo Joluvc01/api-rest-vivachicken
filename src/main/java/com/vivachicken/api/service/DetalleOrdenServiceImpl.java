@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.vivachicken.api.model.DetalleOrden;
+import com.vivachicken.api.model.Orden;
 import com.vivachicken.api.repository.DetalleOrdenRepository;
 
 @Service
@@ -43,6 +44,12 @@ public class DetalleOrdenServiceImpl implements DetalleOrdenService{
 	public Optional<DetalleOrden> findById(Integer id) {
 		// TODO Auto-generated method stub
 		return detalleOrdenRepository.findById(id);
+	}
+
+	@Override
+	public List<DetalleOrden> findByOrden(Orden orden) {
+		// TODO Auto-generated method stub
+		return detalleOrdenRepository.findByOrden(orden);
 	}
 
 }

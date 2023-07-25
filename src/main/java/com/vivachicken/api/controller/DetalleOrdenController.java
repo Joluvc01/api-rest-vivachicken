@@ -16,7 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vivachicken.api.model.DetalleOrden;
+import com.vivachicken.api.model.Orden;
 import com.vivachicken.api.service.DetalleOrdenService;
+import com.vivachicken.api.service.OrdenService;
+
 
 @RestController
 @RequestMapping("/detalleOrden")
@@ -24,49 +27,69 @@ public class DetalleOrdenController {
 
     @Autowired
     private DetalleOrdenService detalleOrdenService;
+    
+    @Autowired
+    private OrdenService ordenService;
 
-
-    // Endpoint para obtener todos los detalles de órdenes
     @GetMapping
-    public List<DetalleOrden> getAllDetalleOrdenes() {
-        return detalleOrdenService.findAll();
+    public ResponseEntity<List<DetalleOrden>> obtenerTodosLosDetallesOrden() {
+        List<DetalleOrden> listaDetallesOrden = detalleOrdenService.findAll();
+        return new ResponseEntity<>(listaDetallesOrden, HttpStatus.OK);
     }
 
-    // Endpoint para obtener un detalle de orden por su ID
     @GetMapping("/{id}")
-    public ResponseEntity<DetalleOrden> getDetalleOrdenById(@PathVariable Integer id) {
+    public ResponseEntity<DetalleOrden> obtenerDetalleOrdenPorId(@PathVariable Integer id) {
         Optional<DetalleOrden> detalleOrden = detalleOrdenService.findById(id);
         if (detalleOrden.isPresent()) {
-            return ResponseEntity.ok(detalleOrden.get());
+            return new ResponseEntity<>(detalleOrden.get(), HttpStatus.OK);
         } else {
-            return ResponseEntity.notFound().build();
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
-    // Endpoint para crear un nuevo detalle de orden
     @PostMapping("/create")
-    public ResponseEntity<DetalleOrden> createDetalleOrden(@RequestBody DetalleOrden detalleOrden) {
-        DetalleOrden createdDetalleOrden = detalleOrdenService.save(detalleOrden);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdDetalleOrden);
+    public ResponseEntity<DetalleOrden> crearDetalleOrden(@RequestBody DetalleOrden detalleOrden) {
+        DetalleOrden detalleOrdenCreado = detalleOrdenService.save(detalleOrden);
+        return new ResponseEntity<>(detalleOrdenCreado, HttpStatus.CREATED);
     }
 
-    // Endpoint para actualizar un detalle de orden existente
-    @PutMapping("/update/{id}")
-    public ResponseEntity<DetalleOrden> updateDetalleOrden(@PathVariable Integer id, @RequestBody DetalleOrden detalleOrden) {
-        Optional<DetalleOrden> existingDetalleOrden = detalleOrdenService.findById(id);
-        if (existingDetalleOrden.isPresent()) {
-            detalleOrden.setId(id); // Asegurarse de establecer el ID correcto para actualizar el registro existente
-            DetalleOrden updatedDetalleOrden = detalleOrdenService.save(detalleOrden);
-            return ResponseEntity.ok(updatedDetalleOrden);
+    @PutMapping("/edit/{id}")
+    public ResponseEntity<Void> actualizarDetalleOrden(@PathVariable Integer id, @RequestBody DetalleOrden detalleOrden) {
+        Optional<DetalleOrden> detalleOrdenExistente = detalleOrdenService.findById(id);
+        if (detalleOrdenExistente.isPresent()) {
+            detalleOrden.setId(id);
+            detalleOrdenService.update(detalleOrden);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {
-            return ResponseEntity.notFound().build();
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
-    // Endpoint para eliminar un detalle de orden por su ID
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> deleteDetalleOrden(@PathVariable Integer id) {
-        detalleOrdenService.deleteById(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<Void> eliminarDetalleOrden(@PathVariable Integer id) {
+        Optional<DetalleOrden> detalleOrden = detalleOrdenService.findById(id);
+        if (detalleOrden.isPresent()) {
+            detalleOrdenService.deleteById(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
+
+    // Agregar un método para obtener todos los detallesOrden por ID de Orden
+    @GetMapping("/detallesPorOrden/{ordenId}")
+    public ResponseEntity<List<DetalleOrden>> getDetallesPorOrden(@PathVariable Integer ordenId) {
+        // Primero, obtenemos la orden por su ID
+        Optional<Orden> orden = ordenService.findById(ordenId);
+
+        if (orden.isPresent()) {
+            // Si la orden existe, buscamos los detalles asociados a ella
+            List<DetalleOrden> detallesPorOrden = detalleOrdenService.findByOrden(orden.get());
+            return new ResponseEntity<>(detallesPorOrden, HttpStatus.OK);
+        } else {
+            // Si la orden no existe, devolvemos un error 404
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
 }

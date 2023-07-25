@@ -7,35 +7,38 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 @Entity
 @Table(name = "detalles")
 public class DetalleOrden {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
-	private double cantidad;
-	private double total;
-	
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "orden_id", nullable = false)
-	@OnDelete(action = OnDeleteAction.CASCADE)
-	private Orden orden;
-	
-	@OneToOne
-	@JoinColumn(name = "productos_id")
-	private Producto productos;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+    private int cantidad;
+    private double total;
 
-	public DetalleOrden() {
-		// TODO Auto-generated constructor stub
-	}
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "orden_id", nullable = false)
+    @JsonProperty(access = Access.WRITE_ONLY)
+    private Orden orden;
 
-	public DetalleOrden(Integer id, double cantidad, double total, Orden orden, Producto productos) {
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "productos_id")
+    private Producto productos;
+
+    public DetalleOrden() {
+        // TODO Auto-generated constructor stub
+    }
+
+	public DetalleOrden(Integer id, int cantidad, double total, Orden orden, Producto productos) {
 		super();
 		this.id = id;
 		this.cantidad = cantidad;
@@ -52,14 +55,13 @@ public class DetalleOrden {
 		this.id = id;
 	}
 
-	public double getCantidad() {
+	public int getCantidad() {
 		return cantidad;
 	}
 
-	public void setCantidad(double cantidad) {
-        this.cantidad = cantidad;
-        this.total = cantidad * productos.getPrecio(); // Multiplicamos la cantidad por el precio del producto
-    }
+	public void setCantidad(int cantidad) {
+		this.cantidad = cantidad;
+	}
 
 	public double getTotal() {
 		return total;
@@ -84,5 +86,6 @@ public class DetalleOrden {
 	public void setProductos(Producto productos) {
 		this.productos = productos;
 	}
-	
+
+
 }

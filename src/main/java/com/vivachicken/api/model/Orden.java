@@ -18,77 +18,54 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.data.annotation.CreatedDate;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 @Entity
 @Table(name = "ordenes")
 public class Orden {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
-	
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "fecha", nullable = false, updatable = false)
-	@CreatedDate
-	private Date fecha;
-	private double subtotal;
-	private double igv;
-	private double totalFinal;
-	
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "cliente_id")
-	private Cliente cliente;
-	
-	@OneToMany(mappedBy = "orden", cascade = CascadeType.ALL)
-	private Set<DetalleOrden> detalles = new HashSet<>();
- 
-	public Orden() {
-		// TODO Auto-generated constructor stub
-	}
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
-	public Orden(Integer id, Date fecha, double subtotal, double igv, double totalFinal, Cliente cliente,
-			Set<DetalleOrden> detalles) {
-		super();
-		this.id = id;
-		this.fecha = fecha;
-		this.subtotal = subtotal;
-		this.igv = igv;
-		this.totalFinal = totalFinal;
-		this.cliente = cliente;
-		this.detalles = detalles;
-	}
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "fecha", nullable = false, updatable = false)
+    @CreatedDate
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date fecha;
 
-	public Set<DetalleOrden> getDetalles() {
-		return detalles;
-	}
+    private double subtotal;
+    private double igv;
+    private double totalFinal;
 
-	public void setDetalles(Set<DetalleOrden> detalles) {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cliente_id")
+    @JsonProperty(access = Access.WRITE_ONLY)
+    private Cliente cliente;
+
+    @JsonProperty(access = Access.WRITE_ONLY)
+    @OneToMany(mappedBy = "orden", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<DetalleOrden> detalles = new HashSet<>();
+
+    public Orden() {
+        // Inicializar la fecha con la fecha actual
+        this.fecha = new Date();
+    }
+
+    public Orden(Integer id, Date fecha, double subtotal, double igv, double totalFinal, Cliente cliente,
+            Set<DetalleOrden> detalles) {
+        super();
+        this.id = id;
+        this.fecha = fecha;
+        this.subtotal = subtotal;
+        this.igv = igv;
+        this.totalFinal = totalFinal;
+        this.cliente = cliente;
         this.detalles = detalles;
-        actualizarTotalFinal(); // Actualizar totalFinal cuando se asignan nuevos detalles
     }
-
-    public void agregarDetalle(DetalleOrden detalle) {
-        detalles.add(detalle);
-        detalle.setOrden(this); // Establecer la relación bidireccional entre detalle y orden
-        actualizarTotalFinal(); // Actualizar totalFinal al agregar un nuevo detalle
-    }
-
-    public void eliminarDetalle(DetalleOrden detalle) {
-        detalles.remove(detalle);
-        detalle.setOrden(null); // Eliminar la relación bidireccional entre detalle y orden
-        actualizarTotalFinal(); // Actualizar totalFinal al eliminar un detalle
-    }
-
-    private void actualizarTotalFinal() {
-        double totalDetalles = detalles.stream().mapToDouble(DetalleOrden::getTotal).sum();
-        totalFinal = subtotal + igv + totalDetalles;
-    }
-
-	public void setFecha(Date fecha) {
-		this.fecha = fecha;
-	}
 
 	public Integer getId() {
 		return id;
@@ -100,6 +77,10 @@ public class Orden {
 
 	public Date getFecha() {
 		return fecha;
+	}
+
+	public void setFecha(Date fecha) {
+		this.fecha = fecha;
 	}
 
 	public double getSubtotal() {
@@ -134,4 +115,13 @@ public class Orden {
 		this.cliente = cliente;
 	}
 
+	public Set<DetalleOrden> getDetalles() {
+		return detalles;
+	}
+
+	public void setDetalles(Set<DetalleOrden> detalles) {
+		this.detalles = detalles;
+	}
+    
+    
 }
