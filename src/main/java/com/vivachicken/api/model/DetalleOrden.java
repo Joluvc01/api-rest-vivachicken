@@ -1,0 +1,91 @@
+package com.vivachicken.api.model;
+
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.MapsId;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
+
+@Entity
+@Table(name = "detalles")
+public class DetalleOrden {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+    private int cantidad;
+    private double total;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "orden_id", nullable = false)
+    @JsonProperty(access = Access.WRITE_ONLY)
+    private Orden orden;
+
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "productos_id")
+    private Producto productos;
+
+    public DetalleOrden() {
+        // TODO Auto-generated constructor stub
+    }
+
+	public DetalleOrden(Integer id, int cantidad, double total, Orden orden, Producto productos) {
+		super();
+		this.id = id;
+		this.cantidad = cantidad;
+		this.total = total;
+		this.orden = orden;
+		this.productos = productos;
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public int getCantidad() {
+		return cantidad;
+	}
+
+	public void setCantidad(int cantidad) {
+		this.cantidad = cantidad;
+	}
+
+	public double getTotal() {
+		return total;
+	}
+
+	public void setTotal(double total) {
+		this.total = total;
+	}
+
+	public Orden getOrden() {
+		return orden;
+	}
+
+	public void setOrden(Orden orden) {
+		this.orden = orden;
+	}
+
+	public Producto getProductos() {
+		return productos;
+	}
+
+	public void setProductos(Producto productos) {
+		this.productos = productos;
+	}
+
+
+}
