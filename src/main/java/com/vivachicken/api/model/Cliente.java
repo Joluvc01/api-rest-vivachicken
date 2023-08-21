@@ -1,5 +1,8 @@
 package com.vivachicken.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,6 +31,7 @@ public class Cliente {
 	private String ruc;
 	
 	@OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
+	@JsonIgnore
 	private Set<Orden> ordenes = new HashSet<>();;
 	
 	public Cliente() {

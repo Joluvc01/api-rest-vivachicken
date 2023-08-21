@@ -7,11 +7,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
@@ -30,21 +29,20 @@ public class DetalleOrden {
     private Orden orden;
 
     @OneToOne
-    @MapsId
-    @JoinColumn(name = "productos_id")
-    private Producto productos;
+    @JoinColumn(name = "producto_id")
+    private Producto producto;
 
     public DetalleOrden() {
         // TODO Auto-generated constructor stub
     }
 
-	public DetalleOrden(Integer id, int cantidad, double total, Orden orden, Producto productos) {
+	public DetalleOrden(Integer id, int cantidad, double total, Orden orden, Producto producto) {
 		super();
 		this.id = id;
 		this.cantidad = cantidad;
 		this.total = total;
 		this.orden = orden;
-		this.productos = productos;
+		this.producto = producto;
 	}
 
 	public Integer getId() {
@@ -79,12 +77,16 @@ public class DetalleOrden {
 		this.orden = orden;
 	}
 
-	public Producto getProductos() {
-		return productos;
+	public Producto getProducto() {
+		return producto;
 	}
 
-	public void setProductos(Producto productos) {
-		this.productos = productos;
+	public void setProducto(Producto productos) {
+		this.producto = productos;
+	}
+
+	public void calcularTotal() {
+		total = cantidad * producto.getPrecio();
 	}
 
 

@@ -41,12 +41,10 @@ public class Orden {
     private double igv;
     private double totalFinal;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "cliente_id")
-    @JsonProperty(access = Access.WRITE_ONLY)
     private Cliente cliente;
 
-    @JsonProperty(access = Access.WRITE_ONLY)
     @OneToMany(mappedBy = "orden", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<DetalleOrden> detalles = new HashSet<>();
 
@@ -122,6 +120,19 @@ public class Orden {
 	public void setDetalles(Set<DetalleOrden> detalles) {
 		this.detalles = detalles;
 	}
-    
-    
+
+	public void calcularTotalFinal() {
+		totalFinal = detalles.stream().mapToDouble(DetalleOrden::getTotal).sum();
+	}
+
+	public void calcularSubtotalYIgv() {
+		calcularTotalFinal();
+		igv = totalFinal * 0.18;
+		subtotal = totalFinal - igv;
+
+		// Redondear el valor del IGV a dos decimales
+		igv = Math.round(igv * 100.0) / 100.0;
+	}
+
+
 }

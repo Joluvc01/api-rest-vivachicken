@@ -50,20 +50,24 @@ public class ClienteController {
         Optional<Cliente> clienteEncontrado = clienteService.findByEmail(cliente.getEmail());
 
         if (!clienteEncontrado.isPresent()) {
-        	System.out.println("Cliente no encontrado.");
+            System.out.println("Cliente no encontrado.");
             return ResponseEntity.notFound().build();
         }
 
         // Comparar las contraseñas
         if (!clienteEncontrado.get().getPassword().equals(cliente.getPassword())) {
-        	System.out.println("Contraseña incorrecta para el cliente: " + cliente.getEmail());
+            System.out.println("Contraseña incorrecta para el cliente: " + cliente.getEmail());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Contraseña incorrecta");
         }
 
-        // Autenticación exitosa, devolver el cliente autenticado
-        System.out.println("Cliente autenticado correctamente: " + cliente.getEmail());
-        return ResponseEntity.ok(clienteEncontrado.get());
+        // Autenticación exitosa, devolver el ID del cliente autenticado
+        Integer idCliente = clienteEncontrado.get().getId();
+        System.out.println("Cliente autenticado correctamente: " + cliente.getEmail() + ", ID: " + idCliente);
+        
+        // Devolver solo el ID como respuesta
+        return ResponseEntity.ok(idCliente);
     }
+
 
     @PostMapping("/create")
     public ResponseEntity<Cliente> createCliente(@RequestBody Cliente cliente) {

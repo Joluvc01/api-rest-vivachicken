@@ -1,9 +1,11 @@
 package com.vivachicken.api.controller;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
+import com.vivachicken.api.dto.OrdenDTO;
+import com.vivachicken.api.model.DetalleOrden;
+import com.vivachicken.api.model.Producto;
+import com.vivachicken.api.service.ProductoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -31,6 +33,9 @@ public class OrdenController {
 
 	@Autowired
 	private ClienteService clienteService;
+
+	@Autowired
+	private ProductoService productoService;
 
 	@GetMapping
 	public ResponseEntity<List<Orden>> obtenerTodasLasOrdenes() {
@@ -63,11 +68,56 @@ public class OrdenController {
 	    }
 	}
 
+	/*
 	@PostMapping("/create")
 	public ResponseEntity<Orden> crearOrden(@RequestBody Orden orden) {
 		Orden ordenCreada = ordenService.save(orden);
 		return new ResponseEntity<>(ordenCreada, HttpStatus.CREATED);
 	}
+	 */
+
+	@PostMapping("/create")
+	public ResponseEntity<Orden> crearOrden(@RequestBody OrdenDTO ordenDto) {
+		Cliente cliente = ordenDto.getCliente();
+		List<DetalleOrden> detalles = ordenDto.getDetalles();
+
+		Optional<Cliente> clienteExistente = clienteService.findById(cliente.getId());
+
+		if (!clienteExistente.isPresent()) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+
+		Orden orden = new Orden();
+		orden.setCliente(clienteExistente.get());
+
+		List<DetalleOrden> detallesGuardados = new ArrayList<>();
+
+		for (DetalleOrden detalle : detalles) {
+			Producto producto = productoService.findById(detalle.getProducto().getId()).orElse(null);
+
+			if (producto != null) {
+				detalle.setProducto(producto);
+				detalle.setOrden(orden);
+
+				// Calcular el total del detalle
+				detalle.calcularTotal();
+
+				detallesGuardados.add(detalle);
+			}
+		}
+
+
+		orden.setDetalles(new HashSet<>(detallesGuardados));
+
+		// Calcula totalFinal, subtotal e IGV
+		orden.calcularTotalFinal();
+		orden.calcularSubtotalYIgv();
+
+
+		Orden ordenCreada = ordenService.save(orden);
+		return new ResponseEntity<>(ordenCreada, HttpStatus.CREATED);
+	}
+
 
 	@PutMapping("/update/{id}")
 	public ResponseEntity<Void> actualizarOrden(@PathVariable Integer id, @RequestBody Orden orden) {
@@ -91,7 +141,6 @@ public class OrdenController {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
-
 
 
 	@GetMapping("/antesDeFecha/{fecha}")
