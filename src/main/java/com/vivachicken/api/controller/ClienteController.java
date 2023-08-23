@@ -70,9 +70,9 @@ public class ClienteController {
 
 
     @PostMapping("/create")
-    public ResponseEntity<Cliente> createCliente(@RequestBody Cliente cliente) {
+    public ResponseEntity<?> createCliente(@RequestBody Cliente cliente) {
         Cliente createdCliente = clienteService.save(cliente);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdCliente);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdCliente.getId());
     }
 
     @PutMapping("/update/{id}")
